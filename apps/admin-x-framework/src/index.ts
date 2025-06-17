@@ -22,6 +22,9 @@ export {RouterProvider, useNavigate, useBaseRoute, useRouteHasParams, resetScrol
 export {useNavigationStack} from './providers/NavigationStackProvider';
 export {Link, NavLink, Outlet, useLocation, useParams, useSearchParams, redirect, matchRoutes} from 'react-router';
 
+// Analytics utilities
+export {ANALYTICS_KEYS, getAnalyticsSettings} from './api/analytics';
+
 // Data fetching
 export type {InfiniteData} from '@tanstack/react-query';
 export {useQueryClient} from '@tanstack/react-query';

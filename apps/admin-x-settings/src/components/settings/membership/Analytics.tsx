@@ -1,8 +1,10 @@
 import React from 'react';
 import TopLevelGroup from '../../TopLevelGroup';
+import useFeatureFlag from '../../../hooks/useFeatureFlag';
 import useSettingGroup from '../../../hooks/useSettingGroup';
 import {Button, Separator, SettingGroupContent, Toggle, withErrorBoundary} from '@tryghost/admin-x-design-system';
-import {getSettingValues, isSettingReadOnly} from '@tryghost/admin-x-framework/api/settings';
+import {getAnalyticsSettings} from '@tryghost/admin-x-framework/api/analytics';
+import {isSettingReadOnly} from '@tryghost/admin-x-framework/api/settings';
 import {usePostsExports} from '@tryghost/admin-x-framework/api/posts';
 
 const Analytics: React.FC<{ keywords: string[] }> = ({keywords}) => {
@@ -16,9 +18,10 @@ const Analytics: React.FC<{ keywords: string[] }> = ({keywords}) => {
         handleEditingChange
     } = useSettingGroup();
 
-    const [trackEmailOpens, trackEmailClicks, trackMemberSources, outboundLinkTagging] = getSettingValues(localSettings, [
-        'email_track_opens', 'email_track_clicks', 'members_track_sources', 'outbound_link_tagging'
-    ]) as boolean[];
+    const analyticsSettings = getAnalyticsSettings(localSettings);
+    const {emailTrackOpens: trackEmailOpens, emailTrackClicks: trackEmailClicks, membersTrackSources: trackMemberSources, outboundLinkTagging, trafficAnalytics} = analyticsSettings;
+    
+    const hasTrafficAnalytics = useFeatureFlag('trafficAnalytics');
 
     const isEmailTrackClicksReadOnly = isSettingReadOnly(localSettings, 'email_track_clicks');
 
@@ -95,6 +98,21 @@ const Analytics: React.FC<{ keywords: string[] }> = ({keywords}) => {
                     handleToggleChange('outbound_link_tagging', e);
                 }}
             />
+            {hasTrafficAnalytics && (
+                <>
+                    <Separator className="border-grey-200 dark:border-grey-900" />
+                    <Toggle
+                        checked={trafficAnalytics}
+                        direction='rtl'
+                        gap='gap-0'
+                        label='Traffic analytics'
+                        labelClasses='py-4 w-full'
+                        onChange={(e) => {
+                            handleToggleChange('traffic_analytics', e);
+                        }}
+                    />
+                </>
+            )}
         </SettingGroupContent>
     );
 
